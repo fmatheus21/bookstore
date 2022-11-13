@@ -1,0 +1,39 @@
+server:
+  port: 8765
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      httpclient:
+        connect-timeout: 5000 #Tempo, em milessegundos, que aguardara a conexao com o servico
+        response-timeout: 30s #Tempo, em segundos, que aguardara por uma resposta do servico
+      discovery:
+        locator:
+          enabled: true
+      routes: #Rotas dos servicos
+        - id: cambium-service
+          uri: lb://cambium-service
+          predicates:
+            - Path=/cambium-service/**
+        - id: book-service
+          uri: lb://book-service
+          predicates:
+            - Path=/book-service/**
+        - id: openapi
+          uri: lb://api-gateway
+          predicates:
+            - Path=/v3/api-docs/**
+          filters:
+            - RewritePath=/v3/api-docs/(?<path>.*), /$\{path}/v3/api-docs
+  sleuth:
+    sampler:
+      probability: 1.0 #Sera registrado 100% dos logs no Distributed Trancing. Em producao, deixar em 5% (0.05)
+      #zipkin:
+      #base-url: http://localhost:9411
