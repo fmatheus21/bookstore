@@ -2,7 +2,7 @@ package com.fmatheus.app.controller.rule;
 
 import com.fmatheus.app.controller.dto.response.CambiumDtoResponse;
 import com.fmatheus.app.model.service.CambiumService;
-import com.fmatheus.app.rule.MessageResponseRule;
+import com.fmatheus.app.rule.ResponseMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,10 +15,10 @@ public class CambiumRule {
     private CambiumService cambiumService;
 
     @Autowired
-    private MessageResponseRule messageResponseRule;
+    private ResponseMessage responseMessage;
 
     public CambiumDtoResponse convertCurrency(BigDecimal amount, String fromCurrency, String toCurrency) {
-        return this.cambiumService.findByFromCurrencyAndToCurrency(amount, fromCurrency, toCurrency).orElseThrow(this.messageResponseRule::errorCambiumNotFound);
+        return this.cambiumService.findByFromCurrencyAndToCurrency(amount, fromCurrency, toCurrency).orElse(null);
     }
 
 

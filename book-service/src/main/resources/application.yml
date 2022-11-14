@@ -12,7 +12,7 @@ eureka:
 microservice:
   cambium:
     resource:
-      converter-cambium: /{amount}/{fromCurrency}/{toCurrency}
+      converter-cambium: /cambium-service/converter/{amount}/{fromCurrency}/{toCurrency}
     name: cambium-service
 
 resilience4j: #Falha na requisicao
