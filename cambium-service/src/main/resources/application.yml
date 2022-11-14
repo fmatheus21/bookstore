@@ -1,13 +1,6 @@
 cambium-service:
   default-value: Microservice Cambium
-  cambio: Config Dev
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include:
-          - "*"
+  cambium: Config Dev
 
 eureka:
   client:
@@ -15,6 +8,29 @@ eureka:
       defaultZone: http://localhost:8761/eureka
   instance:
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+
+openapi:
+  application:
+    title: Cambium Service
+    version: 1.0
+    description: Microservice Cambium
+
+resilience4j:
+  bulkhead:
+    instances:
+      default:
+        max-concurrent-calls: 10
+  ratelimiter:
+    instances:
+      default:
+        limit-for-period: 1  #Numero de requisicoes aceitas dentro de um determinado periodo
+        limit-refresh-period: 1s  #Tamanho do periodo
+  retry:
+    instances:
+      default:
+        max-attempts: 5  #Maximo de tentativas de requisicoes para outro microservice.
+        wait-duration: 2s  #Tempo de aguardo ate a proxima requisicao
+        enable-exponential-backoff: true
 
 server:
   port: ${PORT:0}
@@ -45,3 +61,4 @@ spring:
 springdoc:
   api-docs:
     path: cambium-service/v3/api-docs
+  show-actuator: true

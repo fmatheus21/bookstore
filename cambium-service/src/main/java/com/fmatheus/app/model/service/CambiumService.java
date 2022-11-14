@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 public interface CambiumService extends GenericService<CambiumDtoResponse, Integer> {
+
     CambiumDtoResponse saveRequest(CambiumDtoRequest request);
 
     Optional<CambiumDtoResponse> findByFromCurrencyAndToCurrency(BigDecimal amount, String fromCurrency, String toCurrency);
