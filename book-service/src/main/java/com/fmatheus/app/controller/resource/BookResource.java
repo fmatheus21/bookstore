@@ -23,18 +23,16 @@ public class BookResource {
     @Autowired
     private BookRule rule;
 
-    private int attempt = 1;
-
     @GetMapping(ResourceConstant.ID + ResourceConstant.CURRENCY)
-    @Retry(name = "retryApi", fallbackMethod = "fallbackAfterRetry") //Implementacao Resilience4j
+    @Retry(name = "retryApi", fallbackMethod = "findBookFallbackAfterRetry")
     public ResponseEntity<BookDtoResponse> findBook(@PathVariable int id, @PathVariable String currency) {
-        log.info("Chmando o metodo [findBook]. Tentativa numero {}. Data: {}.", attempt++, LocalDateTime.now());
+        log.info("Chamando o metodo [findBook]. Data: {}.", LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.OK).body(this.rule.findBook(id, currency));
     }
 
 
-    public ResponseEntity<BookDtoResponse> fallbackAfterRetry(Exception ex) {
-        return ResponseEntity.status(HttpStatus.OK).body(new BookDtoResponse());
+    public ResponseEntity<BookDtoResponse> findBookFallbackAfterRetry(@PathVariable int id, @PathVariable String currency, Exception ex) {
+        return ResponseEntity.status(HttpStatus.OK).body(this.rule.findBookFallbackAfterRetry(id, currency));
     }
 
 

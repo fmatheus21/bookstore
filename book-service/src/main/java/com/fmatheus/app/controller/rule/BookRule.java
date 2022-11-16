@@ -14,4 +14,8 @@ public class BookRule {
     public BookDtoResponse findBook(int id, String currency) {
         return this.bookService.findBook(id, currency);
     }
+
+    public BookDtoResponse findBookFallbackAfterRetry(int id, String currency) {
+        return this.bookService.findBookFallbackAfterRetry(id, currency);
+    }
 }
