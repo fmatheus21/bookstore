@@ -21,6 +21,7 @@ resilience4j:
       retryApi:
         maxRetryAttempts: 3
         waitDuration: 5s
+        enableExponentialBackoff: true
 
 server:
   port: ${PORT:0}
