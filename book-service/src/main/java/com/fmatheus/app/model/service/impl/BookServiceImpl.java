@@ -3,13 +3,17 @@ package com.fmatheus.app.model.service.impl;
 import com.fmatheus.app.controller.converter.BookConverter;
 import com.fmatheus.app.controller.dto.request.BookDtoRequest;
 import com.fmatheus.app.controller.dto.response.BookDtoResponse;
+import com.fmatheus.app.controller.dto.response.CambiumDtoResponse;
 import com.fmatheus.app.controller.resource.proxy.CambiumResourceProxy;
 import com.fmatheus.app.model.entity.Book;
 import com.fmatheus.app.model.repository.BookRepository;
 import com.fmatheus.app.model.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -62,6 +66,10 @@ public class BookServiceImpl implements BookService {
             return result.get();
         }
         return null;
+    }
+
+    private ResponseEntity<CambiumDtoResponse> convertCurrency(BigDecimal price, String fromCurrency,  String toCurrency ){
+        return this.cambiumResourceProxy.convertCurrency(price, fromCurrency, toCurrency);
     }
 
 

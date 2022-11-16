@@ -15,22 +15,8 @@ microservice:
       converter-cambium: /cambium-service/converter/{amount}/{fromCurrency}/{toCurrency}
     name: cambium-service
 
-resilience4j: #Falha na requisicao
-  bulkhead:
-    instances:
-      default:
-        max-concurrent-calls: 10
-  ratelimiter:
-    instances:
-      default:
-        limit-for-period: 20 #Requisicoes por periodo
-        limit-refresh-period: 10s #A cada 10 segundos
-  retry:  #Fara novas tentativas
-    instances:
-      default:
-        max-attempts: 5 #Fara 5 tentativas
-        wait-duration: 3s #Tempo de espera entre as tentativas
-        enable-exponential-backoff: true
+
+
 
 server:
   port: ${PORT:0}
