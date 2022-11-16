@@ -15,8 +15,12 @@ microservice:
       converter-cambium: /cambium-service/converter/{amount}/{fromCurrency}/{toCurrency}
     name: cambium-service
 
-
-
+resilience4j:
+  retry:
+    instances:
+      retryApi:
+        maxRetryAttempts: 3
+        waitDuration: 5s
 
 server:
   port: ${PORT:0}
