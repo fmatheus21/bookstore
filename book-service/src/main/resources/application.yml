@@ -1,64 +1,8 @@
-book-service:
-  default-value: Microservice Book
-  greeting: Config Dev
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka
-  instance:
-    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}} #Iniciara em uma porta aleatoria
-
-microservice:
-  cambium:
-    resource:
-      converter-cambium: /cambium-service/converter/{amount}/{fromCurrency}/{toCurrency}
-    name: cambium-service
-
-resilience4j:
-  bulkhead:
-    instances:
-      default:
-        maxConcurrentCalls: 10
-  ratelimiter:
-    instances:
-      default:
-        limitForPeriod: 5 #Numero de requisicoes aceitas dentro de um determinado periodo
-        limitRefreshPeriod: 2s #Tamanho do periodo
-  retry:
-    instances:
-      default:
-        maxRetryAttempts: 3
-        waitDuration: 5s
-        enableExponentialBackoff: true
-
-server:
-  port: ${PORT:0}
-
 spring:
   application:
     name: book-service
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/bookstore_book?createDatabaseIfNotExist=true&useTimezone=true&serverTimezone=UTC
-    username: ${SPRING_DATASOURCE_USER}
-    password: ${SPRING_DATASOURCE_PASSWORD}
-  jpa:
-    show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
-    flyway:
-      url: jdbc:mysql://localhost:3306/bookstore_book?createDatabaseIfNotExist=true&useTimezone=true&serverTimezone=UTC
-      user: ${SPRING_DATASOURCE_USER}
-      password: ${SPRING_DATASOURCE_PASSWORD}
-    sleuth:
-      sampler:
-        probability: 1.0 #Sera registrado 100% dos logs no Distributed Trancing. Em producao, deixar em 5% (0.05)
-      #zipkin:
-      #base-url: http://localhost:9411
-
-springdoc:
-  api-docs:
-    path: book-service/v3/api-docs
-  show-actuator: true
+  cloud:
+    config:
+      profile: dev #(dev, prod e qa)
+  config:
+    import: configserver:http://localhost:8888/
