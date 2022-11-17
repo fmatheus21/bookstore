@@ -16,9 +16,18 @@ microservice:
     name: cambium-service
 
 resilience4j:
+  bulkhead:
+    instances:
+      default:
+        maxConcurrentCalls: 10
+  ratelimiter:
+    instances:
+      default:
+        limitForPeriod: 5 #Numero de requisicoes aceitas dentro de um determinado periodo
+        limitRefreshPeriod: 2s #Tamanho do periodo
   retry:
     instances:
-      retryApi:
+      default:
         maxRetryAttempts: 3
         waitDuration: 5s
         enableExponentialBackoff: true
