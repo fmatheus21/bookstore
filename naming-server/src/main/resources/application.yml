@@ -1,11 +1,8 @@
-server:
-  port: 8761
-
 spring:
   application:
     name: naming-server
-
-eureka:
-  client:
-    register-with-eureka: false # Impede que o Eureka se auto registre
-    fetch-registry: false
+  cloud:
+    config:
+      profile: dev #(dev, prod e qa)
+  config:
+    import: configserver:http://localhost:8888/
