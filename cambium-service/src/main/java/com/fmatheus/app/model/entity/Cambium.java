@@ -37,7 +37,4 @@ public class Cambium implements Serializable {
     @Transient
     private BigDecimal convertedValue;
 
-    @Transient
-    private String environment;
-
 }

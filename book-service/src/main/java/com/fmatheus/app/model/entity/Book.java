@@ -39,7 +39,6 @@ public class Book implements Serializable {
     @Column(name = "title", nullable = false, length = 70)
     private String title;
 
-
     @Enumerated(EnumType.STRING)
     @Column(name = "currency", nullable = false, length = 3)
     private CurrencyEnum currency;

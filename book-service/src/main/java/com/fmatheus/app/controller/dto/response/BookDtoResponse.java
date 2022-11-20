@@ -20,5 +20,4 @@ public class BookDtoResponse {
     private BigDecimal price;
     private String title;
     private String currency;
-    private String environment;
 }

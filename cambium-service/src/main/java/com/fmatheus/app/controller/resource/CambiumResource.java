@@ -3,13 +3,14 @@ package com.fmatheus.app.controller.resource;
 import com.fmatheus.app.constant.HttpStatusConstant;
 import com.fmatheus.app.controller.constant.OperationConstant;
 import com.fmatheus.app.controller.constant.ResourceConstant;
-import com.fmatheus.app.controller.messages.ResponseMessages;
+import com.fmatheus.app.controller.dto.request.CambiumDtoRequest;
 import com.fmatheus.app.controller.rule.CambiumRule;
 import com.fmatheus.app.exception.handler.response.MessageResponse;
 import com.fmatheus.app.exception.swagger.BadRequest;
 import com.fmatheus.app.exception.swagger.Forbidden;
 import com.fmatheus.app.exception.swagger.ServerError;
 import com.fmatheus.app.exception.swagger.Unauthorized;
+import com.fmatheus.app.rule.ResponseMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -19,21 +20,22 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-@Tag(name = OperationConstant.TAG_PRODUCT)
+@Tag(name = OperationConstant.TAG_CAMBIUM)
 @RestController
-@RequestMapping(ResourceConstant.CAMBIUM_SERVICE)
+@RequestMapping(ResourceConstant.CAMBIUM_CONVERTER)
 public class CambiumResource {
 
     @Autowired
     private CambiumRule rule;
+
+    @Autowired
+    private ResponseMessage responseMessage;
 
     @Operation(summary = OperationConstant.GET, description = OperationConstant.DESCRIPTION_GET)
     @ApiResponses(value = {
@@ -48,11 +50,18 @@ public class CambiumResource {
             @ApiResponse(responseCode = HttpStatusConstant.INTERNAL_SERVER_ERROR_NUMBER, description = HttpStatusConstant.INTERNAL_SERVER_ERROR,
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ServerError.class)))
     })
-    @GetMapping(ResourceConstant.CONVERTER_CAMBIUM)
+    @GetMapping(ResourceConstant.CONVERTER)
     public ResponseEntity<?> convertCurrency(@PathVariable BigDecimal amount, @PathVariable String fromCurrency, @PathVariable String toCurrency) {
         var response = rule.convertCurrency(amount, fromCurrency, toCurrency);
-        return Objects.nonNull(response) ? ResponseEntity.status(HttpStatus.OK).body(rule.convertCurrency(amount, fromCurrency, toCurrency)) :
-                ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseMessages(HttpStatus.BAD_REQUEST, "Câmbio não encontrado."));
+        return Objects.nonNull(response) ? ResponseEntity.status(HttpStatus.OK).body(response) :
+                ResponseEntity.status(HttpStatus.BAD_REQUEST).body(this.responseMessage.error(HttpStatus.BAD_REQUEST, "Câmbio não encontrado"));
+    }
+
+    @PutMapping(ResourceConstant.ID)
+    public ResponseEntity<?> update(@PathVariable int id, @RequestBody @Valid CambiumDtoRequest request) {
+        var response = rule.update(id, request);
+        return Objects.nonNull(response) ? ResponseEntity.status(HttpStatus.OK).body(response) :
+                ResponseEntity.status(HttpStatus.BAD_REQUEST).body(this.responseMessage.error(HttpStatus.BAD_REQUEST, "Câmbio não encontrado"));
     }
 
 }

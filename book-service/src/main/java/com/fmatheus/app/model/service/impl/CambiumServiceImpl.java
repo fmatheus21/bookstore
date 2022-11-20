@@ -7,7 +7,6 @@ import com.fmatheus.app.model.service.CambiumService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,8 +28,8 @@ public class CambiumServiceImpl implements CambiumService {
     }
 
     @Override
-    public Cambium save(Cambium cambiumDtoResponse) {
-        return null;
+    public Cambium save(Cambium cambium) {
+        return this.repository.save(cambium);
     }
 
 
@@ -40,7 +39,7 @@ public class CambiumServiceImpl implements CambiumService {
     }
 
     @Override
-    public Optional<Cambium> findByFromCurrencyAndToCurrency(BigDecimal amount, String fromCurrency, String toCurrency) {
+    public Optional<Cambium> findByFromCurrencyAndToCurrency(String fromCurrency, String toCurrency) {
         return this.repository.findByFromCurrencyAndToCurrency(fromCurrency, toCurrency);
     }
 

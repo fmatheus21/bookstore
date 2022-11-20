@@ -1,11 +1,11 @@
 package com.fmatheus.app.model.service;
 
-import com.fmatheus.app.controller.dto.response.BookDtoResponse;
+import com.fmatheus.app.model.entity.Book;
 
-public interface BookService extends GenericService<BookDtoResponse, Integer> {
+import java.util.Optional;
 
-    BookDtoResponse findBook(int id, String currency);
+public interface BookService extends GenericService<Book, Integer> {
 
-    BookDtoResponse findBookFallbackAfterRetry(int id, String currency);
+    Optional<Book> findBook(int id, String currency);
 
 }

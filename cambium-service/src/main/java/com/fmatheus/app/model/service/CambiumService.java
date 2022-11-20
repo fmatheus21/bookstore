@@ -1,14 +1,11 @@
 package com.fmatheus.app.model.service;
 
-import com.fmatheus.app.controller.dto.request.CambiumDtoRequest;
-import com.fmatheus.app.controller.dto.response.CambiumDtoResponse;
+import com.fmatheus.app.model.entity.Cambium;
 
-import java.math.BigDecimal;
 import java.util.Optional;
 
-public interface CambiumService extends GenericService<CambiumDtoResponse, Integer> {
+public interface CambiumService extends GenericService<Cambium, Integer> {
 
-    CambiumDtoResponse saveRequest(CambiumDtoRequest request);
+    Optional<Cambium> findByFromCurrencyAndToCurrency(String fromCurrency, String toCurrency);
 
-    Optional<CambiumDtoResponse> findByFromCurrencyAndToCurrency(BigDecimal amount, String fromCurrency, String toCurrency);
 }

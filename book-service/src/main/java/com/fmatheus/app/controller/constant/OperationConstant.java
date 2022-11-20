@@ -6,7 +6,7 @@ public class OperationConstant {
         throw new IllegalStateException("OperationConstant class");
     }
 
-    public static final String TAG_CAMBIUM = "Cambium";
+    public static final String TAG_BOOK = "Book";
     public static final String LIST = "List Records";
     public static final String GET = "Consult Record";
     public static final String POST = "Create Record";

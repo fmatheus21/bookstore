@@ -6,6 +6,7 @@ import javax.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Builder
 @Getter
@@ -36,8 +37,5 @@ public class Cambium implements Serializable {
 
     @Transient
     private BigDecimal convertedValue;
-
-    @Transient
-    private String environment;
 
 }

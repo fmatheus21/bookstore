@@ -4,16 +4,16 @@ import lombok.*;
 
 import java.math.BigDecimal;
 
+@ToString
+@Builder
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class CambiumDtoResponse {
     private Integer id;
     private String fromCurrency;
     private String toCurrency;
     private BigDecimal conversionFactor;
     private BigDecimal convertedValue;
-    private String environment;
 }
