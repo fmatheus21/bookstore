@@ -2,6 +2,17 @@ version: '3.4'
 
 services:
 
+  config-server:
+    image: fmatheus21/config-server
+    restart: always
+    build:
+      context: .
+      dockerfile: config-server/Dockerfile
+    ports:
+      - 8888:8888
+    networks:
+      - fmatheus-network
+
   rabbit-mq:
     image: rabbitmq:3.8.14-management
     ports:
@@ -22,7 +33,7 @@ services:
     networks:
       - fmatheus-network
 
-  cambium-db:
+  bookstore-cambium-db:
     image: mysql:8.0.29
     command: --default-authentication-plugin=mysql_native_password
     restart: always
@@ -41,7 +52,7 @@ services:
     networks:
       - fmatheus-network
 
-  book-db:
+  bookstore-book-db:
     image: mysql:8.0.29
     command: --default-authentication-plugin=mysql_native_password
     restart: always
@@ -68,6 +79,8 @@ services:
       dockerfile: naming-server/Dockerfile
     ports:
       - 8761:8761
+    depends_on:
+      - config-server
     networks:
       - fmatheus-network
 
@@ -80,6 +93,7 @@ services:
     ports:
       - 8765:8765
     depends_on:
+      - config-server
       - naming-server
       - rabbit-mq
     environment:
@@ -105,17 +119,18 @@ services:
       SPRING_RABBITMQ_HOST: rabbit-mq
       SPRING_ZIPKIN_SENDER_TYPE: rabbit
       SPRING.APPLICATION.NAME: cambium-service
-      SPRING.DATASOURCE.URL: jdbc:mysql://cambium-db:3308/cambium_service?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&enabledTLSProtocols=TLSv1.2
+      SPRING.DATASOURCE.URL: jdbc:mysql://bookstore-cambium-db:3308/cambium_service?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&enabledTLSProtocols=TLSv1.2
       SPRING.DATASOURCE.USERNAME: docker
       SPRING.DATASOURCE.PASSWORD: admin123
-      SPRING.FLYWAY.URL: jdbc:mysql://cambium-db:3308/cambium_service?createDatabaseIfNotExist=true&useSSL=false&useTimezone=true&serverTimezone=UTC&enabledTLSProtocols=TLSv1.2
+      SPRING.FLYWAY.URL: jdbc:mysql://bookstore-cambium-db:3308/cambium_service?createDatabaseIfNotExist=true&useSSL=false&useTimezone=true&serverTimezone=UTC&enabledTLSProtocols=TLSv1.2
       SPRING.FLYWAY.USER: docker
       SPRING.FLYWAY.PASSWORD: admin123
     ports:
       - 8000:8000
     depends_on:
+      - config-server
       - naming-server
-      - cambium-db
+      - bookstore-cambium-db
       - rabbit-mq
     networks:
       - fmatheus-network
@@ -134,17 +149,18 @@ services:
       SPRING_RABBITMQ_HOST: rabbit-mq
       SPRING_ZIPKIN_SENDER_TYPE: rabbit
       SPRING.APPLICATION.NAME: book-service
-      SPRING.DATASOURCE.URL: jdbc:mysql://book-db:3310/book_service?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&enabledTLSProtocols=TLSv1.2
+      SPRING.DATASOURCE.URL: jdbc:mysql://bookstore-book-db:3310/book_service?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&enabledTLSProtocols=TLSv1.2
       SPRING.DATASOURCE.USERNAME: docker
       SPRING.DATASOURCE.PASSWORD: admin123
-      SPRING.FLYWAY.URL: jdbc:mysql://book-db:3310/book_service?createDatabaseIfNotExist=true&useSSL=false&useTimezone=true&serverTimezone=UTC&enabledTLSProtocols=TLSv1.2
+      SPRING.FLYWAY.URL: jdbc:mysql://bookstore-book-db:3310/book_service?createDatabaseIfNotExist=true&useSSL=false&useTimezone=true&serverTimezone=UTC&enabledTLSProtocols=TLSv1.2
       SPRING.FLYWAY.USER: docker
       SPRING.FLYWAY.PASSWORD: admin123
     ports:
       - 8100:8100
     depends_on:
+      - config-server
       - naming-server
-      - book-db
+      - bookstore-book-db
       - rabbit-mq
     networks:
       - fmatheus-network
