@@ -12,7 +12,7 @@
 
 	<groupId>com.fmatheus</groupId>
 	<artifactId>config-server</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>config-server</name>
 	<description>Configuração Spring Cloud</description>
 
@@ -60,6 +60,12 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<version>${project.parent.version}</version>
+				<configuration>
+					<image>
+						<name>fmatheus21/${project.artifactId}:${project.version}</name>
+					</image>
+					<pullPolicy>IF_NOT_PRESENT</pullPolicy>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
