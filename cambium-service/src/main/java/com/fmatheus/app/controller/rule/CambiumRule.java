@@ -13,8 +13,6 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Objects;
-import java.util.Optional;
 
 @Component
 public class CambiumRule {
@@ -25,7 +23,6 @@ public class CambiumRule {
     @Autowired
     private CambiumService cambiumService;
 
-
     @Autowired
     private CambiumPublisher cambiumPublisher;
 
@@ -33,22 +30,22 @@ public class CambiumRule {
     private CambiumConverter cambiumConverter;
 
     public CambiumDtoResponse convertCurrency(BigDecimal amount, String fromCurrency, String toCurrency) {
-        return this.convertCambium(amount, fromCurrency, toCurrency).orElse(null);
+        var cambium = this.cambiumService.findByFromCurrencyAndToCurrency(fromCurrency, toCurrency).orElseThrow(this.responseMessage::errorCambiumNotConverter);
+        var converterValue = convertCurrency(cambium.getConversionFactor(), amount);
+        cambium.setConvertedValue(converterValue);
+        return this.cambiumConverter.converterToResponse(cambium);
     }
 
 
     public CambiumDtoResponse update(int id, CambiumDtoRequest request) {
-        var cambium = this.cambiumService.findById(id).orElse(null);
-        if (Objects.nonNull(cambium)) {
-            cambium.setConversionFactor(request.getConversionFactor());
-            cambium.setConversionFactor(request.getConversionFactor());
-            this.cambiumService.save(cambium);
-            this.sendCambiumList();
-            var converter = this.cambiumConverter.converterToResponse(cambium);
-            converter.setMessage(this.responseMessage.successUpdate());
-            return converter;
-        }
-        return null;
+        var cambium = this.cambiumService.findById(id).orElseThrow(this.responseMessage::errorNotFound);
+        cambium.setConversionFactor(request.getConversionFactor());
+        cambium.setConversionFactor(request.getConversionFactor());
+        this.cambiumService.save(cambium);
+        this.sendCambiumList();
+        var converter = this.cambiumConverter.converterToResponse(cambium);
+        converter.setMessage(this.responseMessage.successUpdate());
+        return converter;
     }
 
     private void sendCambiumList() {
@@ -58,18 +55,6 @@ public class CambiumRule {
             e.printStackTrace();
         }
     }
-
-
-    private Optional<CambiumDtoResponse> convertCambium(BigDecimal amount, String fromCurrency, String toCurrency) {
-        var cambium = this.cambiumService.findByFromCurrencyAndToCurrency(fromCurrency, toCurrency);
-        if (cambium.isPresent()) {
-            var converterValue = convertCurrency(cambium.get().getConversionFactor(), amount);
-            cambium.get().setConvertedValue(converterValue);
-            return Optional.of(this.cambiumConverter.converterToResponse(cambium.get()));
-        }
-        return Optional.empty();
-    }
-
 
     private static BigDecimal convertCurrency(BigDecimal factor, BigDecimal amount) {
         return factor.multiply(amount).setScale(2, RoundingMode.CEILING);

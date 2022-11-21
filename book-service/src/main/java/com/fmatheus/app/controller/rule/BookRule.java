@@ -1,6 +1,5 @@
 package com.fmatheus.app.controller.rule;
 
-import com.fmatheus.app.controller.constant.ApplicationConstant;
 import com.fmatheus.app.controller.converter.BookConverter;
 import com.fmatheus.app.controller.dto.response.BookDtoResponse;
 import com.fmatheus.app.controller.enumerable.CurrencyEnum;
@@ -35,7 +34,7 @@ public class BookRule {
 
 
     public BookDtoResponse findBook(int id, String currency) {
-        var book = this.bookService.findBook(id, currency).orElseThrow(this.responseMessage::errorNotFound);
+        var book = this.bookService.findById(id).orElseThrow(this.responseMessage::errorNotFound);
         var proxy = this.cambiumResourceProxy.convertCurrency(book.getPrice(), book.getCurrency().name(), currency);
         book.setPrice(Objects.requireNonNull(proxy.getBody()).getConvertedValue());
         book.setCurrency(CurrencyEnum.valueOf(proxy.getBody().getToCurrency()));
@@ -43,7 +42,7 @@ public class BookRule {
     }
 
     public BookDtoResponse findBookFallbackAfterRetry(int id, String currency) {
-        var book = this.bookService.findBook(id, currency).orElseThrow(this.responseMessage::errorNotFound);
+        var book = this.bookService.findById(id).orElseThrow(this.responseMessage::errorNotFound);
         var cambium = this.cambiumRepository.findByFromCurrencyAndToCurrency(book.getCurrency().name(), currency).orElseThrow(this.responseMessage::errorNotFound);
         var converterValue = convertCurrency(cambium.getConversionFactor(), book.getPrice());
         book.setPrice(converterValue);

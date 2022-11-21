@@ -38,10 +38,5 @@ public class BookServiceImpl implements BookService {
 
     }
 
-    @Override
-    public Optional<Book> findBook(int id, String currency) {
-        return this.findById(id);
-    }
-
 
 }
