@@ -1,0 +1,17 @@
+eureka:
+  client:
+    register-with-eureka: false # Impede que o Eureka se auto registre
+    fetch-registry: false
+
+server:
+  port: 8761
+
+spring:
+  application:
+    name: naming-server
+  security:
+    basic:
+      enabled: true
+    user:
+      name: bookstore
+      password: yt76Tdn93

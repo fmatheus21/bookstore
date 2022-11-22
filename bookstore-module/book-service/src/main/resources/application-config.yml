@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: book-service
+  cloud:
+    config:
+      profile: dev #(dev, prod e qa)
+  config:
+    import: configserver:http://localhost:8888/

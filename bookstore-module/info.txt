@@ -1,0 +1,17 @@
+Aplicação									Porta				Projeto							Descricao
+Cambium Microservice					    Aleatória			cambium-service				    Microservice
+Book Microservice							Aleatória			book-service					Microservice
+Spring Clould Server						8888				config-server					Centraliza as configurações dos microservices (Spring Cloud Config Server, Spring Cloud Config Client). Git para armazenamento de configurações.
+Naming Server (Eureka)						8761		        naming-server					Registro de serviços (Load Balancer)
+API Gateway									8765		        api-gateway						Porta de entrada da aplicação. Segurança, autenticação, rotemento e filtros.
+Distributed Tracing (Zipkin)				9411												Registra os logs dos microserviços.
+OpenAPI										8765												http://localhost:8765/swagger-ui.html
+
+Criar container do Zipkin
+docker run -d --name zipkin-server -p 9411:9411 openzipkin/zipkin:2.23.2
+
+Criar container do Keycloak
+docker run -d -it -p 8080:8080 -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:18.0.0 start-dev
+
+Criar container RabbitMQ
+docker run -d -it --name rabbitmq-server -p 5672:5672 -p 15672:15672 -e RABBITMQ_DEFAULT_USER=admin -e RABBITMQ_DEFAULT_PASS=admin rabbitmq:3.11.3-management
