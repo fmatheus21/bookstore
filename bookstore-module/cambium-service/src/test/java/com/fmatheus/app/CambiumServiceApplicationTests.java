@@ -6,8 +6,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class CambiumServiceApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+    @Test
+    void main() {
+        CambiumServiceApplication.main(new String[]{});
+    }
 
 }

@@ -1,8 +1,0 @@
-spring:
-  application:
-    name: cambium-service
-  cloud:
-    config:
-      profile: dev #(dev, prod e qa)
-  config:
-    import: configserver:http://localhost:8888/
