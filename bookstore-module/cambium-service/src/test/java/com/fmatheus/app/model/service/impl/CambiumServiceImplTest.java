@@ -60,18 +60,6 @@ class CambiumServiceImplTest {
         verify(this.cambiumRepository).findAll();
     }
 
-    /**
-     * Method under test: {@link CambiumServiceImpl#findAll()}
-     */
-    @Test
-    void testFindAll() {
-        ArrayList<Cambium> cambiumList = new ArrayList<>();
-        when(cambiumRepository.findAll()).thenReturn(cambiumList);
-        var actualFindAllResult = cambiumServiceImpl.findAll();
-        assertSame(cambiumList, actualFindAllResult);
-        assertTrue(actualFindAllResult.isEmpty());
-        verify(cambiumRepository).findAll();
-    }
 
     /**
      * Metodo de teste: {@link CambiumServiceImpl#findById(Integer)}
