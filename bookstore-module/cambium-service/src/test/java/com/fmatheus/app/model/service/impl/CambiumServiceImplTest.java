@@ -2,16 +2,13 @@ package com.fmatheus.app.model.service.impl;
 
 import com.fmatheus.app.controller.constant.TestConstant;
 import com.fmatheus.app.controller.converter.CambiumConverter;
-import com.fmatheus.app.controller.dto.response.CambiumDtoResponse;
 import com.fmatheus.app.model.entity.Cambium;
 import com.fmatheus.app.model.repository.CambiumRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -20,34 +17,25 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
-@ContextConfiguration(classes = {CambiumServiceImpl.class})
-@ExtendWith(SpringExtension.class)
+@SpringBootTest
 class CambiumServiceImplTest {
 
+    @InjectMocks
+    private CambiumServiceImpl cambiumServiceImpl;
 
-    @MockBean
+    @Mock
     private CambiumConverter cambiumConverter;
 
-    @MockBean
+    @Mock
     private CambiumRepository cambiumRepository;
-
-    @Autowired
-    private CambiumServiceImpl cambiumServiceImpl;
 
     private Optional<Cambium> optional;
 
     private Cambium cambium;
 
-    private CambiumDtoResponse cambiumDtoResponse;
 
     private List<Cambium> listCambium = new ArrayList<>();
 
@@ -79,7 +67,7 @@ class CambiumServiceImplTest {
     void testFindAll() {
         ArrayList<Cambium> cambiumList = new ArrayList<>();
         when(cambiumRepository.findAll()).thenReturn(cambiumList);
-        List<Cambium> actualFindAllResult = cambiumServiceImpl.findAll();
+        var actualFindAllResult = cambiumServiceImpl.findAll();
         assertSame(cambiumList, actualFindAllResult);
         assertTrue(actualFindAllResult.isEmpty());
         verify(cambiumRepository).findAll();
@@ -91,7 +79,7 @@ class CambiumServiceImplTest {
     @Test
     void findByIdTest() {
         when(cambiumRepository.findById(anyInt())).thenReturn(this.optional);
-        Optional<Cambium> actualResult = cambiumServiceImpl.findById(TestConstant.ID);
+        var actualResult = cambiumServiceImpl.findById(TestConstant.ID);
         assertSame(this.optional, actualResult);
         assertTrue(actualResult.isPresent());
         var result = actualResult.get();
@@ -146,7 +134,6 @@ class CambiumServiceImplTest {
     private void start() {
         this.cambium = this.loadCambium();
         this.optional = Optional.of(this.loadCambium());
-        this.cambiumDtoResponse = this.loadCambiumResponse();
         this.listCambium = List.of(this.cambium);
     }
 
@@ -161,15 +148,6 @@ class CambiumServiceImplTest {
                 .build();
     }
 
-    private CambiumDtoResponse loadCambiumResponse() {
-        return CambiumDtoResponse.builder()
-                .id(TestConstant.ID)
-                .fromCurrency(TestConstant.FROM_CURRENCY)
-                .toCurrency(TestConstant.TO_CURRENCY)
-                .conversionFactor(TestConstant.CONVERSION_FACTOR)
-                .convertedValue(TestConstant.CONVERTED_VALUE)
-                .build();
-    }
 
     private static BigDecimal convertCurrency(BigDecimal factor) {
         return factor.multiply(TestConstant.AMOUNT).setScale(2, RoundingMode.CEILING);

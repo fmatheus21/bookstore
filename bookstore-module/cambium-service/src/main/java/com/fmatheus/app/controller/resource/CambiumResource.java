@@ -11,7 +11,6 @@ import com.fmatheus.app.exception.swagger.BadRequest;
 import com.fmatheus.app.exception.swagger.Forbidden;
 import com.fmatheus.app.exception.swagger.ServerError;
 import com.fmatheus.app.exception.swagger.Unauthorized;
-import com.fmatheus.app.rule.ResponseMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -34,8 +33,6 @@ public class CambiumResource {
     @Autowired
     private CambiumRule rule;
 
-    @Autowired
-    private ResponseMessage responseMessage;
 
     @Operation(summary = OperationConstant.GET, description = OperationConstant.DESCRIPTION_GET)
     @ApiResponses(value = {

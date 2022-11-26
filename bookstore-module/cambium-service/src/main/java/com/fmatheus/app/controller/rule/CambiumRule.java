@@ -39,7 +39,6 @@ public class CambiumRule {
     public CambiumDtoResponse update(int id, CambiumDtoRequest request) {
         var cambium = this.cambiumService.findById(id).orElseThrow(this.responseMessage::errorNotFound);
         cambium.setConversionFactor(request.getConversionFactor());
-        cambium.setConversionFactor(request.getConversionFactor());
         this.cambiumService.save(cambium);
         this.sendCambiumList();
         var converter = this.cambiumConverter.converterToResponse(cambium);
