@@ -16,8 +16,8 @@ public class CambiumConverterImpl implements CambiumConverter {
     private ModelMapper modelMapper;
 
     @Override
-    public Cambium converterToRequest(CambiumDtoRequest cambiumDtoRequest) {
-        return null;
+    public Cambium converterToRequest(CambiumDtoRequest request) {
+        return this.modelMapper.map(request, Cambium.class);
     }
 
     @Override

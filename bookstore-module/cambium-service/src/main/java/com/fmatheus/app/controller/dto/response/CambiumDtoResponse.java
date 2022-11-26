@@ -9,7 +9,6 @@ import java.math.BigDecimal;
 @Builder
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CambiumDtoResponse {
