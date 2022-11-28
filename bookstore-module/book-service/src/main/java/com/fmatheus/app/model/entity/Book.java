@@ -33,7 +33,7 @@ public class Book implements Serializable {
     @Column(name = "launch_date", nullable = false)
     private LocalDateTime launchDate;
 
-    @Column(name = "price", nullable = false, scale = 8, precision = 2)
+    @Column(name = "price", nullable = false)
     private BigDecimal price;
 
     @Column(name = "title", nullable = false, length = 70)
