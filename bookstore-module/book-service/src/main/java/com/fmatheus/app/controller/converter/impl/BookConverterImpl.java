@@ -15,8 +15,8 @@ public class BookConverterImpl implements BookConverter {
     private ModelMapper modelMapper;
 
     @Override
-    public Book converterToRequest(BookDtoRequest cambiumDtoRequest) {
-        return null;
+    public Book converterToRequest(BookDtoRequest request) {
+        return this.modelMapper.map(request, Book.class);
     }
 
     @Override

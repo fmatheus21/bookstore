@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.openMocks;
 
+@DisplayName("Teste de regra de negócio de livro")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ContextConfiguration(classes = {BookRule.class})
 @ExtendWith(SpringExtension.class)
