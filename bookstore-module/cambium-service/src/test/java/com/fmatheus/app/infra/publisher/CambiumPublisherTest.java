@@ -6,15 +6,15 @@ import com.fmatheus.app.controller.converter.CambiumConverter;
 import com.fmatheus.app.controller.dto.response.CambiumDtoResponse;
 import com.fmatheus.app.model.entity.Cambium;
 import com.fmatheus.app.model.service.CambiumService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 
@@ -22,19 +22,22 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.openMocks;
 
-@SpringBootTest
+@DisplayName("Teste de fila do RabbitMQ")
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@ContextConfiguration(classes = {CambiumPublisher.class})
+@ExtendWith(SpringExtension.class)
 class CambiumPublisherTest {
 
-    @InjectMocks
+    @Autowired
     private CambiumPublisher cambiumPublisher;
 
-    @Mock
+    @MockBean
     private CambiumConverter cambiumConverter;
 
-    @Mock
+    @MockBean
     private CambiumService cambiumService;
 
-    @Mock
+    @MockBean
     private Queue queue;
 
     @MockBean
@@ -54,6 +57,8 @@ class CambiumPublisherTest {
      * Metodo de teste: {@link CambiumPublisher#sendCambiumList()}
      */
     @Test
+    @Order(1)
+    @DisplayName("Sucesso no envio da lista de câmbios para a fila bookstore_cambium do RabbitMQ")
     void sendCambiumListTest() throws JsonProcessingException, AmqpException {
         when(this.cambiumConverter.converterToResponse(any())).thenReturn(this.cambiumDtoResponse);
         when(this.cambiumService.findAll()).thenReturn(this.listCambium);

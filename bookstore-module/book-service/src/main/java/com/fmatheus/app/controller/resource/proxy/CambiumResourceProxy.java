@@ -12,8 +12,8 @@ import java.math.BigDecimal;
 @FeignClient(value = ResourceConstant.PROXY_CAMBIUM_NAME, configuration = {CustomErrorDecoder.class})
 public interface CambiumResourceProxy {
 
-
     @GetMapping(ResourceConstant.PROXY_CAMBIUM_CONVERTER_CAMBIO)
     ResponseEntity<CambiumDtoResponse> convertCurrency(@PathVariable BigDecimal amount, @PathVariable String fromCurrency, @PathVariable String toCurrency);
+
 }
 

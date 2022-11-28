@@ -6,32 +6,34 @@ import com.fmatheus.app.controller.constant.TestConstant;
 import com.fmatheus.app.controller.dto.request.CambiumDtoRequest;
 import com.fmatheus.app.controller.dto.response.CambiumDtoResponse;
 import com.fmatheus.app.controller.rule.CambiumRule;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
 
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.openMocks;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@DisplayName("Teste da recursos de câmbio")
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@ContextConfiguration(classes = {CambiumResource.class})
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
 class CambiumResourceTest {
 
-    @InjectMocks
+    @Autowired
     private CambiumResource cambiumResource;
 
-    @Mock
+    @MockBean
     private CambiumRule cambiumRule;
 
     private CambiumDtoResponse cambiumDtoResponse;
@@ -50,6 +52,8 @@ class CambiumResourceTest {
      * Metodo de teste: {@link CambiumResource#convertCurrency(BigDecimal, String, String)}
      */
     @Test
+    @Order(1)
+    @DisplayName("Sucesso na conversão de câmbio")
     void convertCurrencyTest() throws Exception {
         when(this.cambiumRule.convertCurrency(any(), anyString(), anyString())).thenReturn(this.cambiumDtoResponse);
 
@@ -60,15 +64,17 @@ class CambiumResourceTest {
         MockMvcBuilders.standaloneSetup(this.cambiumResource)
                 .build()
                 .perform(builder)
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(TestConstant.CONTENT_TYPE_JSON))
-                .andExpect(MockMvcResultMatchers.content().string(response));
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(TestConstant.CONTENT_TYPE_JSON))
+                .andExpect(content().string(response));
     }
 
     /**
      * Metodo de teste: {@link CambiumResource#update(int, CambiumDtoRequest)}
      */
     @Test
+    @Order(2)
+    @DisplayName("Sucesso na atualização de câmbio")
     void updateTest() throws Exception {
         when(this.cambiumRule.update(anyInt(), any())).thenReturn(this.cambiumDtoResponse);
 
@@ -81,9 +87,9 @@ class CambiumResourceTest {
         MockMvcBuilders.standaloneSetup(this.cambiumResource)
                 .build()
                 .perform(builder)
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(TestConstant.CONTENT_TYPE_JSON))
-                .andExpect(MockMvcResultMatchers.content().string(response));
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(TestConstant.CONTENT_TYPE_JSON))
+                .andExpect(content().string(response));
     }
 
     private void start() {

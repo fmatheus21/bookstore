@@ -1,6 +1,5 @@
 package com.fmatheus.app.model.service.impl;
 
-import com.fmatheus.app.controller.converter.CambiumConverter;
 import com.fmatheus.app.model.entity.Cambium;
 import com.fmatheus.app.model.repository.CambiumRepository;
 import com.fmatheus.app.model.service.CambiumService;
@@ -16,9 +15,6 @@ public class CambiumServiceImpl implements CambiumService {
 
     @Autowired
     private CambiumRepository repository;
-
-    @Autowired
-    private CambiumConverter cambiumConverter;
 
     @Override
     public List<Cambium> findAll() {

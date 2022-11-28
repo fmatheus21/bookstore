@@ -48,7 +48,7 @@ public class BookResource {
      * @Bulkhead Determina a quantidade de requisicoes concorrentes sera permitido.
      */
 
-    /*@Operation(summary = OperationConstant.GET, description = OperationConstant.DESCRIPTION_GET)
+    @Operation(summary = OperationConstant.GET, description = OperationConstant.DESCRIPTION_GET)
     @ApiResponses(value = {
             @ApiResponse(responseCode = HttpStatusConstant.OK_NUMBER, description = HttpStatusConstant.OK,
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = MessageResponse.class))),
@@ -60,7 +60,7 @@ public class BookResource {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = Forbidden.class))),
             @ApiResponse(responseCode = HttpStatusConstant.INTERNAL_SERVER_ERROR_NUMBER, description = HttpStatusConstant.INTERNAL_SERVER_ERROR,
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ServerError.class)))
-    })*/
+    })
     //@Retry(name = "default", fallbackMethod = "findBookFallbackAfterRetry")
     @CircuitBreaker(name = "default", fallbackMethod = "findBookFallbackAfterRetry")
     @RateLimiter(name = "default")

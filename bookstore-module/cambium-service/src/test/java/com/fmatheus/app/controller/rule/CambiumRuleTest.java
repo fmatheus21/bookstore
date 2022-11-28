@@ -12,11 +12,12 @@ import com.fmatheus.app.infra.publisher.CambiumPublisher;
 import com.fmatheus.app.model.entity.Cambium;
 import com.fmatheus.app.model.service.CambiumService;
 import com.fmatheus.app.rule.ResponseMessage;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -27,22 +28,25 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.openMocks;
 
-@SpringBootTest
+@DisplayName("Teste das regras de negócio de câmbio")
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@ContextConfiguration(classes = {CambiumRule.class})
+@ExtendWith(SpringExtension.class)
 class CambiumRuleTest {
 
-    @InjectMocks
+    @Autowired
     private CambiumRule cambiumRule;
 
-    @Mock
+    @MockBean
     private ResponseMessage responseMessage;
 
-    @Mock
+    @MockBean
     private CambiumService cambiumService;
 
-    @Mock
+    @MockBean
     private CambiumPublisher cambiumPublisher;
 
-    @Mock
+    @MockBean
     private CambiumConverter cambiumConverter;
 
     private Optional<Cambium> optional;
@@ -67,6 +71,8 @@ class CambiumRuleTest {
      * Metodo de teste: {@link CambiumRule#convertCurrency(BigDecimal, String, String)}
      */
     @Test
+    @Order(1)
+    @DisplayName("Sucesso na conversão de câmbio")
     void convertCurrencySuccessTest() {
 
         when(this.cambiumService.findByFromCurrencyAndToCurrency(anyString(), anyString())).thenReturn(this.optional);
@@ -75,15 +81,19 @@ class CambiumRuleTest {
         verify(this.cambiumConverter).converterToResponse(any());
         verify(this.cambiumService).findByFromCurrencyAndToCurrency(anyString(), anyString());
 
-        var convertCurrencyRetReturnValue = this.cambiumRule.convertCurrency(TestConstant.AMOUNT, TestConstant.FROM_CURRENCY, TestConstant.TO_CURRENCY);
+        var convertCurrencyValue = this.cambiumRule.convertCurrency(TestConstant.AMOUNT, TestConstant.FROM_CURRENCY, TestConstant.TO_CURRENCY);
 
-        assertEquals(this.cambiumDtoResponse, convertCurrencyRetReturnValue);
+        assertSame(this.cambiumDtoResponse, convertCurrencyValue);
+        assertEquals(this.cambiumDtoResponse, convertCurrencyValue);
+        assertEquals(CambiumDtoResponse.class, convertCurrencyValue.getClass());
     }
 
     /**
      * Metodo de teste: {@link CambiumRule#convertCurrency(BigDecimal, String, String)}
      */
     @Test
+    @Order(2)
+    @DisplayName("Exceção na conversão de câmbio")
     void convertCurrencyExceptionTest() {
         when(this.cambiumService.findByFromCurrencyAndToCurrency(anyString(), anyString())).thenThrow(new BadRequestException(MessageEnum.ERROR_CAMBIUM_NOT_CONVERTER));
         try {
@@ -99,6 +109,8 @@ class CambiumRuleTest {
      * Metodo de teste: {@link CambiumRule#update(int, CambiumDtoRequest)}
      */
     @Test
+    @Order(3)
+    @DisplayName("Sucesso na atualização de câmbio")
     void updateSuccessTest() throws JsonProcessingException {
 
         when(this.cambiumConverter.converterToResponse(any())).thenReturn(this.cambiumDtoResponse);
@@ -111,17 +123,22 @@ class CambiumRuleTest {
 
         assertSame(this.cambiumDtoResponse, actualResult);
         assertSame(this.messageResponse, actualResult.getMessage());
+        assertEquals(this.cambiumDtoResponse, actualResult);
+        assertEquals(CambiumDtoResponse.class, actualResult.getClass());
         verify(this.cambiumConverter).converterToResponse(any());
         verify(this.cambiumPublisher).sendCambiumList();
         verify(this.cambiumService).save(any());
         verify(this.cambiumService).findById(anyInt());
         verify(this.responseMessage).successUpdate();
+
     }
 
     /**
      * Metodo de teste: {@link CambiumRule#update(int, CambiumDtoRequest)}
      */
     @Test
+    @Order(4)
+    @DisplayName("Exceção na atualização de câmbio")
     void updateExceptionTest() {
         when(this.cambiumService.findById(anyInt())).thenThrow(new BadRequestException(MessageEnum.ERROR_NOT_FOUND));
         try {

@@ -6,7 +6,6 @@ import com.fmatheus.app.model.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,7 +19,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<Book> findAll() {
-        return Collections.emptyList();
+        return this.repository.findAll();
     }
 
     @Override
@@ -35,7 +34,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void deleteById(Integer id) {
-
+        this.repository.deleteById(id);
     }
 
 

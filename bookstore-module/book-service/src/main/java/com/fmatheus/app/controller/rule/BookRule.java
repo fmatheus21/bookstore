@@ -36,7 +36,12 @@ public class BookRule {
     public BookDtoResponse findBook(int id, String currency) {
         var book = this.bookService.findById(id).orElseThrow(this.responseMessage::errorNotFound);
         var proxy = this.cambiumResourceProxy.convertCurrency(book.getPrice(), book.getCurrency().name(), currency);
-        book.setPrice(Objects.requireNonNull(proxy.getBody()).getConvertedValue());
+
+        if (Objects.isNull(proxy.getBody())) {
+            throw this.responseMessage.errorCambiumNotConverter();
+        }
+
+        book.setPrice(proxy.getBody().getConvertedValue());
         book.setCurrency(CurrencyEnum.valueOf(proxy.getBody().getToCurrency()));
         return this.bookConverter.converterToResponse(book);
     }
