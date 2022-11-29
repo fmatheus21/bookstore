@@ -1,4 +1,4 @@
-package com.fmatheus.app.controller.rule;
+package com.fmatheus.app.controller.rule.unit;
 
 import com.fmatheus.app.controller.constant.TestConstant;
 import com.fmatheus.app.controller.converter.BookConverter;
@@ -6,6 +6,7 @@ import com.fmatheus.app.controller.dto.response.BookDtoResponse;
 import com.fmatheus.app.controller.dto.response.CambiumDtoResponse;
 import com.fmatheus.app.controller.enumerable.CurrencyEnum;
 import com.fmatheus.app.controller.resource.proxy.CambiumResourceProxy;
+import com.fmatheus.app.controller.rule.BookRule;
 import com.fmatheus.app.enumerable.MessageEnum;
 import com.fmatheus.app.exception.BadRequestException;
 import com.fmatheus.app.model.entity.Book;

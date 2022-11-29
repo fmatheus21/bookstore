@@ -1,10 +1,11 @@
-package com.fmatheus.app.controller.resource;
+package com.fmatheus.app.controller.resource.unit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fmatheus.app.controller.constant.ResourceConstant;
 import com.fmatheus.app.controller.constant.TestConstant;
 import com.fmatheus.app.controller.dto.response.BookDtoResponse;
+import com.fmatheus.app.controller.resource.BookResource;
 import com.fmatheus.app.controller.rule.BookRule;
 import com.fmatheus.app.enumerable.MessageEnum;
 import com.fmatheus.app.exception.BadRequestException;

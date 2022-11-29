@@ -1,9 +1,10 @@
-package com.fmatheus.app.infra.publisher;
+package com.fmatheus.app.infra.publisher.unit;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fmatheus.app.controller.constant.TestConstant;
 import com.fmatheus.app.controller.converter.CambiumConverter;
 import com.fmatheus.app.controller.dto.response.CambiumDtoResponse;
+import com.fmatheus.app.infra.publisher.CambiumPublisher;
 import com.fmatheus.app.model.entity.Cambium;
 import com.fmatheus.app.model.service.CambiumService;
 import org.junit.jupiter.api.*;

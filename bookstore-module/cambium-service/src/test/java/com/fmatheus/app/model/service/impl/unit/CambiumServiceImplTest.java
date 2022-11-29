@@ -1,8 +1,9 @@
-package com.fmatheus.app.model.service.impl;
+package com.fmatheus.app.model.service.impl.unit;
 
 import com.fmatheus.app.controller.constant.TestConstant;
 import com.fmatheus.app.model.entity.Cambium;
 import com.fmatheus.app.model.repository.CambiumRepository;
+import com.fmatheus.app.model.service.impl.CambiumServiceImpl;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,54 +27,59 @@ import static org.mockito.MockitoAnnotations.openMocks;
 @ExtendWith(SpringExtension.class)
 class CambiumServiceImplTest {
 
-    @MockBean
-    private CambiumRepository cambiumRepository;
-
     @Autowired
     private CambiumServiceImpl cambiumServiceImpl;
 
-    private List<Cambium> listCambium;
+    @MockBean
+    private CambiumRepository cambiumRepository;
 
     private Optional<Cambium> optional;
 
     private Cambium cambium;
 
+
+    private List<Cambium> listCambium = new ArrayList<>();
+
     @BeforeEach
-    public void beforeEach() {
+    void setUp() {
         openMocks(this);
         this.start();
     }
-
 
     /**
      * Metodo de teste: {@link CambiumServiceImpl#findAll()}
      */
     @Test
     @Order(1)
-    @DisplayName("Sucesso na listagem de câmbios")
-    void findAllSuccessTest() {
+    @DisplayName("Sucesso da lista de câmbio")
+    void findAllTest() {
         when(this.cambiumRepository.findAll()).thenReturn(this.listCambium);
         var actualResult = this.cambiumServiceImpl.findAll();
+        assertNotNull(actualResult);
+        assertEquals(1, actualResult.size());
         assertSame(this.listCambium, actualResult);
         assertFalse(actualResult.isEmpty());
+        assertEquals(Cambium.class, actualResult.get(0).getClass());
         verify(this.cambiumRepository).findAll();
     }
+
 
     /**
      * Metodo de teste: {@link CambiumServiceImpl#findById(Integer)}
      */
     @Test
     @Order(2)
-    @DisplayName("Sucesso na pesquisa de câmbio por id")
+    @DisplayName("Sucesso pesquisa id do câmbio")
     void findByIdSuccessTest() {
-        when(this.cambiumRepository.findById(anyInt())).thenReturn(this.optional);
-        var actualResult = this.cambiumServiceImpl.findById(1);
+        when(cambiumRepository.findById(anyInt())).thenReturn(this.optional);
+        var actualResult = cambiumServiceImpl.findById(TestConstant.ID);
         assertSame(this.optional, actualResult);
         assertTrue(actualResult.isPresent());
         var result = actualResult.get();
         assertEquals(TestConstant.CONVERSION_FACTOR, result.getConversionFactor());
-        assertEquals(TestConstant.CONVERTED_VALUE, result.getConvertedValue());
-        verify(this.cambiumRepository).findById(anyInt());
+        assertEquals(convertCurrency(result.getConversionFactor()), result.getConvertedValue());
+        assertEquals(Cambium.class, result.getClass());
+        verify(cambiumRepository).findById(anyInt());
     }
 
     /**
@@ -78,13 +87,14 @@ class CambiumServiceImplTest {
      */
     @Test
     @Order(3)
-    @DisplayName("Sucesso ao salvar um novo câmbio")
+    @DisplayName("Sucesso na criação de novo câmbio")
     void saveSuccessTest() {
         when(this.cambiumRepository.save(any())).thenReturn(this.cambium);
-        var actualResult = cambiumServiceImpl.save(this.cambium);
+        var actualResult = this.cambiumServiceImpl.save(this.cambium);
+        assertNotNull(actualResult);
         assertSame(this.cambium, actualResult);
         assertEquals(TestConstant.CONVERSION_FACTOR, actualResult.getConversionFactor());
-        assertEquals(TestConstant.CONVERTED_VALUE, actualResult.getConvertedValue());
+        assertEquals(convertCurrency(actualResult.getConversionFactor()), actualResult.getConvertedValue());
         assertEquals(Cambium.class, actualResult.getClass());
         verify(this.cambiumRepository).save(any());
     }
@@ -94,12 +104,12 @@ class CambiumServiceImplTest {
      */
     @Test
     @Order(4)
-    @DisplayName("Sucesso na exclusão de um câmbio")
+    @DisplayName("Sucesso ao excluir câmbio")
     void deleteByIdSuccessTest() {
         doNothing().when(this.cambiumRepository).deleteById(anyInt());
         this.cambiumServiceImpl.deleteById(TestConstant.ID);
         verify(this.cambiumRepository).deleteById(anyInt());
-        assertTrue(this.cambiumServiceImpl.findById(TestConstant.ID).isEmpty());
+        assertTrue(this.cambiumServiceImpl.findAll().isEmpty());
     }
 
     /**
@@ -108,23 +118,24 @@ class CambiumServiceImplTest {
     @Test
     @Order(5)
     @DisplayName("Sucesso na pesquisa de um câmbio por parâmetros")
-    void findByFromCurrencyAndToCurrency() {
-        when(this.cambiumRepository.findByFromCurrencyAndToCurrency(anyString(), anyString())).thenReturn(this.optional);
-        var actualResult = this.cambiumServiceImpl.findByFromCurrencyAndToCurrency(TestConstant.FROM_CURRENCY, TestConstant.TO_CURRENCY);
+    void findByFromCurrencyAndToCurrencySuccessTest() {
+        when(cambiumRepository.findByFromCurrencyAndToCurrency(anyString(), anyString())).thenReturn(this.optional);
+        var actualResult = cambiumServiceImpl.findByFromCurrencyAndToCurrency(TestConstant.FROM_CURRENCY, TestConstant.TO_CURRENCY);
         assertSame(this.optional, actualResult);
         assertTrue(actualResult.isPresent());
         var result = actualResult.get();
         assertEquals(TestConstant.CONVERSION_FACTOR, result.getConversionFactor());
-        assertEquals(TestConstant.CONVERTED_VALUE, result.getConvertedValue());
-        assertEquals(Cambium.class, result.getClass());
+        assertEquals(convertCurrency(result.getConversionFactor()), result.getConvertedValue());
         verify(this.cambiumRepository).findByFromCurrencyAndToCurrency(anyString(), anyString());
     }
 
+
     private void start() {
-        this.listCambium = List.of(this.loadCambium());
-        this.optional = Optional.of(this.loadCambium());
         this.cambium = this.loadCambium();
+        this.optional = Optional.of(this.loadCambium());
+        this.listCambium = List.of(this.cambium);
     }
+
 
     private Cambium loadCambium() {
         return Cambium.builder()
@@ -134,6 +145,11 @@ class CambiumServiceImplTest {
                 .conversionFactor(TestConstant.CONVERSION_FACTOR)
                 .convertedValue(TestConstant.CONVERTED_VALUE)
                 .build();
+    }
+
+
+    private static BigDecimal convertCurrency(BigDecimal factor) {
+        return factor.multiply(TestConstant.AMOUNT).setScale(2, RoundingMode.CEILING);
     }
 }
 

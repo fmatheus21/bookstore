@@ -1,10 +1,11 @@
-package com.fmatheus.app.controller.rule;
+package com.fmatheus.app.controller.rule.unit;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fmatheus.app.controller.constant.TestConstant;
 import com.fmatheus.app.controller.converter.CambiumConverter;
 import com.fmatheus.app.controller.dto.request.CambiumDtoRequest;
 import com.fmatheus.app.controller.dto.response.CambiumDtoResponse;
+import com.fmatheus.app.controller.rule.CambiumRule;
 import com.fmatheus.app.enumerable.MessageEnum;
 import com.fmatheus.app.exception.BadRequestException;
 import com.fmatheus.app.exception.handler.response.MessageResponse;

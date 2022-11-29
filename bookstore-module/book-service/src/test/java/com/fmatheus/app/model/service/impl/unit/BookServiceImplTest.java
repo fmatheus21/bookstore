@@ -1,8 +1,9 @@
-package com.fmatheus.app.model.service.impl;
+package com.fmatheus.app.model.service.impl.unit;
 
 import com.fmatheus.app.controller.constant.TestConstant;
 import com.fmatheus.app.model.entity.Book;
 import com.fmatheus.app.model.repository.BookRepository;
+import com.fmatheus.app.model.service.impl.BookServiceImpl;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;

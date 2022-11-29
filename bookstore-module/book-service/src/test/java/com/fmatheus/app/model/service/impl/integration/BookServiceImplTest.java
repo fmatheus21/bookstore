@@ -1,7 +1,8 @@
-package com.fmatheus.app.model.service.impl;
+package com.fmatheus.app.model.service.impl.integration;
 
 import com.fmatheus.app.controller.constant.TestConstant;
 import com.fmatheus.app.model.entity.Book;
+import com.fmatheus.app.model.service.impl.BookServiceImpl;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest
-class BookServiceImplIntegrationTest {
+class BookServiceImplTest {
 
     @Autowired
     private BookServiceImpl bookService;

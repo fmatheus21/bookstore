@@ -1,10 +1,11 @@
-package com.fmatheus.app.controller.resource;
+package com.fmatheus.app.controller.resource.unit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fmatheus.app.controller.constant.ResourceConstant;
 import com.fmatheus.app.controller.constant.TestConstant;
 import com.fmatheus.app.controller.dto.request.CambiumDtoRequest;
 import com.fmatheus.app.controller.dto.response.CambiumDtoResponse;
+import com.fmatheus.app.controller.resource.CambiumResource;
 import com.fmatheus.app.controller.rule.CambiumRule;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
