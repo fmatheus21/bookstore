@@ -14,6 +14,7 @@
     <version>${project.parent.version}</version>
     <name>naming-server</name>
     <description>Naming Server Eureka</description>
+    <packaging>jar</packaging>
 
     <dependencies>
 

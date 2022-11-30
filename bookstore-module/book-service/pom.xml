@@ -14,6 +14,7 @@
     <version>${project.parent.version}</version>
     <name>book-service</name>
     <description>Microservice Book</description>
+    <packaging>jar</packaging>
 
     <dependencies>
 

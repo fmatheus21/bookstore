@@ -14,6 +14,7 @@
     <version>${project.parent.version}</version>
     <name>cambium-service</name>
     <description>Microservice Cambium</description>
+    <packaging>jar</packaging>
 
     <dependencies>
 

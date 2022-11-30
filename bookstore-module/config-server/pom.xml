@@ -14,6 +14,7 @@
     <version>${project.parent.version}</version>
     <name>config-server</name>
     <description>Configuração Spring Cloud</description>
+    <packaging>jar</packaging>
 
     <dependencies>
 
