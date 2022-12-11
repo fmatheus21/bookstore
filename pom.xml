@@ -12,7 +12,7 @@
     </parent>
 
     <groupId>com.fmatheus.app</groupId>
-    <artifactId>bookstore-module</artifactId>
+    <artifactId>bookstore</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
 
