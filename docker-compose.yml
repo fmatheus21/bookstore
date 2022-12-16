@@ -2,6 +2,45 @@ version: '3.4'
 
 services:
 
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    networks:
+      - fmatheus-network
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    networks:
+      - fmatheus-network
+    depends_on:
+      - zookeeper
+    ports:
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSET_TOPIC_REPLICATION_FACTOR: 1
+
+  kafdrop:
+    image: obsidiandynamics/kafdrop:latest
+    container_name: kafdrop
+    networks:
+      - fmatheus-network
+    depends_on:
+      - kafka
+      - zookeeper
+    ports:
+      - "19000:9000"
+    environment:
+      KAFKA_BROKERCONNECT: kafka:29092
+
   rabbitmq:
     image: rabbitmq:3.11.3-management
     container_name: rabbitmq
@@ -11,8 +50,8 @@ services:
       - RABBITMQ_DEFAULT_USER=admin
       - RABBITMQ_DEFAULT_PASS=admin
     ports:
-      - 5672:5672 #AMQP protocol port
-      - 15672:15672 #HTTP management UI
+      - "5672:5672" #AMQP protocol port
+      - "15672:15672" #HTTP management UI
     volumes:
       - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
       - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
@@ -25,9 +64,11 @@ services:
     hostname: zipkin-server
     restart: always
     ports:
-      - 9411:9411
+      - "9411:9411"
     depends_on:
       - rabbitmq
+      - kafka
+      - zookeeper
     environment:
       RABBIT_URI: amqp://admin:admin@rabbitmq:5672
     networks:
@@ -48,7 +89,7 @@ services:
       MYSQL_ROOT_HOST: '%'
       MYSQL_TCP_PORT: 3308
     ports:
-      - 3308:3308
+      - "3308:3308"
     expose:
       - 3308
     networks:
@@ -69,7 +110,7 @@ services:
       MYSQL_ROOT_HOST: '%'
       MYSQL_TCP_PORT: 3310
     ports:
-      - 3310:3310
+      - "3310:3310"
     expose:
       - 3310
     networks:
@@ -84,7 +125,7 @@ services:
       context: .
       dockerfile: naming-server/Dockerfile
     ports:
-      - 8761:8761
+      - "8761:8761"
     networks:
       - fmatheus-network
 
@@ -97,10 +138,12 @@ services:
       context: .
       dockerfile: api-gateway/Dockerfile
     ports:
-      - 8765:8765
+      - "8765:8765"
     depends_on:
       - naming-server
       - rabbitmq
+      - kafka
+      - zookeeper
     environment:
       EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://bookstore:yt76Tdn93@naming-server:8761/eureka
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411/
@@ -133,12 +176,14 @@ services:
       SPRING.FLYWAY.USER: docker
       SPRING.FLYWAY.PASSWORD: admin123
     ports:
-      - 8000:8000
+      - "8000:8000"
     depends_on:
       - naming-server
       - cambium-db
       - api-gateway
       - rabbitmq
+      - kafka
+      - zookeeper
     networks:
       - fmatheus-network
 
@@ -165,11 +210,13 @@ services:
       SPRING.FLYWAY.USER: docker
       SPRING.FLYWAY.PASSWORD: admin123
     ports:
-      - 8100:8100
+      - "8100:8100"
     depends_on:
       - naming-server
       - book-db
       - rabbitmq
+      - kafka
+      - zookeeper
     networks:
       - fmatheus-network
 

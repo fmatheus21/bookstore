@@ -15,3 +15,18 @@ docker run -d -it -p 8080:8080 -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWOR
 
 Criar container RabbitMQ
 docker run -d -it --name rabbitmq-server -p 5672:5672 -p 15672:15672 -e RABBITMQ_DEFAULT_USER=admin -e RABBITMQ_DEFAULT_PASS=admin rabbitmq:3.11.3-management
+
+Map: https://whimsical.com
+
+Ordem de Execução:
+- Keycloak
+- Zipkin
+- RabbitMQ
+- Kafka - Entre em /kafka e digite docker compose up -d
+- config-server - Só é necessário se a configuração estiver no git, que neste momento não está.
+- naming-server
+- api-gateway
+- cambium-service
+- book-service
+
+Placa Mãe Asus ROG MAXIMUS Z690 HERO, Intel 1700 Z690, DDR5, ATX
