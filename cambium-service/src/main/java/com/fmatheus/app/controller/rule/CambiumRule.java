@@ -4,7 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fmatheus.app.controller.converter.CambiumConverter;
 import com.fmatheus.app.controller.dto.request.CambiumDtoRequest;
 import com.fmatheus.app.controller.dto.response.CambiumDtoResponse;
+import com.fmatheus.app.controller.util.ApplicationUtil;
+import com.fmatheus.app.infra.publisher.CambiumProducer;
 import com.fmatheus.app.infra.publisher.CambiumPublisher;
+import com.fmatheus.app.model.entity.Cambium;
 import com.fmatheus.app.model.service.CambiumService;
 import com.fmatheus.app.rule.ResponseMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,9 @@ import java.math.RoundingMode;
 public class CambiumRule {
 
     @Autowired
+    private ApplicationUtil application;
+
+    @Autowired
     private ResponseMessage responseMessage;
 
     @Autowired
@@ -24,6 +30,9 @@ public class CambiumRule {
 
     @Autowired
     private CambiumPublisher cambiumPublisher;
+
+    @Autowired
+    private CambiumProducer cambiumProducer;
 
     @Autowired
     private CambiumConverter cambiumConverter;
@@ -39,16 +48,21 @@ public class CambiumRule {
     public CambiumDtoResponse update(int id, CambiumDtoRequest request) {
         var cambium = this.cambiumService.findById(id).orElseThrow(this.responseMessage::errorNotFound);
         cambium.setConversionFactor(request.getConversionFactor());
-        this.cambiumService.save(cambium);
-        this.sendCambiumList();
+        var commit = this.cambiumService.save(cambium);
+        this.sendCambiumList(commit);
         var converter = this.cambiumConverter.converterToResponse(cambium);
         converter.setMessage(this.responseMessage.successUpdate());
         return converter;
     }
 
-    private void sendCambiumList() {
+    private void sendCambiumList(Cambium cambium) {
         try {
-            cambiumPublisher.sendCambiumList();
+            switch (this.application.getMessenger()) {
+                case "kafka" -> this.cambiumProducer.sendCambiumList(cambium);
+                case "rabbit" -> cambiumPublisher.sendCambiumList();
+                default -> {
+                }
+            }
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

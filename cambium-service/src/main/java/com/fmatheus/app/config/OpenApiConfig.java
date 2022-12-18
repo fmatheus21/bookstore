@@ -1,29 +1,30 @@
 package com.fmatheus.app.config;
 
-import com.fmatheus.app.controller.constant.PropertiesConstant;
+import com.fmatheus.app.controller.util.ApplicationUtil;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-
+@RequiredArgsConstructor
 @Configuration
 public class OpenApiConfig {
 
+    private final ApplicationUtil application;
+
     @Bean
-    public OpenAPI customOpenAPI(
-            @Value(PropertiesConstant.OPENAPI_DESCRIPTION) String appDesciption,
-            @Value(PropertiesConstant.OPENAPI_VERSION) String appVersion,
-            @Value(PropertiesConstant.OPENAPI_TITLE) String appTitle
-    ) {
+    public OpenAPI customOpenAPI() {
+
         return new OpenAPI()
                 .info(new Info()
-                        .title(appTitle)
-                        .version(appVersion)
-                        .description(appDesciption)
+                        .title(this.application.getOpenApiTitle())
+                        .version(this.application.getOpenApiVersion())
+                        .description(this.application.getOpenApiDescription())
                         .termsOfService("http://swagger.io/terms/")
                         .license(new License().name("Apache 2.0").url("http://springdoc.org")));
     }
+
+
 }
