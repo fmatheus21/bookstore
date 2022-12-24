@@ -49,17 +49,17 @@ public class CambiumRule {
         var cambium = this.cambiumService.findById(id).orElseThrow(this.responseMessage::errorNotFound);
         cambium.setConversionFactor(request.getConversionFactor());
         var commit = this.cambiumService.save(cambium);
-        this.sendCambiumList(commit);
+        this.sendCambiumObject(commit);
         var converter = this.cambiumConverter.converterToResponse(cambium);
         converter.setMessage(this.responseMessage.successUpdate());
         return converter;
     }
 
-    private void sendCambiumList(Cambium cambium) {
+    private void sendCambiumObject(Cambium cambium) {
         try {
             switch (this.application.getMessenger()) {
-                case "kafka" -> this.cambiumProducer.sendCambiumList(cambium);
-                case "rabbit" -> cambiumPublisher.sendCambiumList();
+                case "kafka" -> this.cambiumProducer.sendCambiumObject(cambium);
+                case "rabbit" -> cambiumPublisher.sendCambiumObject(cambium);
                 default -> {
                 }
             }

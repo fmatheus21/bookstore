@@ -1,3 +1,7 @@
+api:
+  kafka:
+    topic: bookstore_cambium
+  messenger: kafka
 eureka:
   client:
     service-url:
@@ -55,8 +59,12 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
     show-sql: true
+  kafka:
+    producer:
+      bootstrap-servers:
+      - localhost:29092
   profiles:
-    active: #local
+    active: null
   rabbitmq:
     host: localhost
     password: admin

@@ -6,9 +6,11 @@ import com.fmatheus.app.controller.converter.CambiumConverter;
 import com.fmatheus.app.controller.dto.request.CambiumDtoRequest;
 import com.fmatheus.app.controller.dto.response.CambiumDtoResponse;
 import com.fmatheus.app.controller.rule.CambiumRule;
+import com.fmatheus.app.controller.util.ApplicationUtil;
 import com.fmatheus.app.enumerable.MessageEnum;
 import com.fmatheus.app.exception.BadRequestException;
 import com.fmatheus.app.exception.handler.response.MessageResponse;
+import com.fmatheus.app.infra.publisher.CambiumProducer;
 import com.fmatheus.app.infra.publisher.CambiumPublisher;
 import com.fmatheus.app.model.entity.Cambium;
 import com.fmatheus.app.model.service.CambiumService;
@@ -35,6 +37,15 @@ import static org.mockito.MockitoAnnotations.openMocks;
 @ExtendWith(SpringExtension.class)
 class CambiumRuleTest {
 
+    @MockBean
+    private ApplicationUtil applicationUtil;
+
+    @MockBean
+    private CambiumProducer cambiumProducer;
+
+    @MockBean
+    private CambiumPublisher cambiumPublisher;
+
     @Autowired
     private CambiumRule cambiumRule;
 
@@ -43,9 +54,6 @@ class CambiumRuleTest {
 
     @MockBean
     private CambiumService cambiumService;
-
-    @MockBean
-    private CambiumPublisher cambiumPublisher;
 
     @MockBean
     private CambiumConverter cambiumConverter;
@@ -112,10 +120,12 @@ class CambiumRuleTest {
     @Test
     @Order(3)
     @DisplayName("Sucesso na atualização de câmbio")
-    void updateSuccessTest() throws JsonProcessingException {
+    void updateSuccessKafkaTest() throws JsonProcessingException {
+
+        when(applicationUtil.getMessenger()).thenReturn("kafka");
 
         when(this.cambiumConverter.converterToResponse(any())).thenReturn(this.cambiumDtoResponse);
-        doNothing().when(this.cambiumPublisher).sendCambiumList();
+        doNothing().when(this.cambiumProducer).sendCambiumObject(this.cambium);
         when(this.cambiumService.save(any())).thenReturn(this.cambium);
         when(this.cambiumService.findById(anyInt())).thenReturn(this.optional);
         when(this.responseMessage.successUpdate()).thenReturn(this.messageResponse);
@@ -126,8 +136,9 @@ class CambiumRuleTest {
         assertSame(this.messageResponse, actualResult.getMessage());
         assertEquals(this.cambiumDtoResponse, actualResult);
         assertEquals(CambiumDtoResponse.class, actualResult.getClass());
+        verify(applicationUtil).getMessenger();
         verify(this.cambiumConverter).converterToResponse(any());
-        verify(this.cambiumPublisher).sendCambiumList();
+        verify(this.cambiumProducer).sendCambiumObject(any());
         verify(this.cambiumService).save(any());
         verify(this.cambiumService).findById(anyInt());
         verify(this.responseMessage).successUpdate();
@@ -139,6 +150,37 @@ class CambiumRuleTest {
      */
     @Test
     @Order(4)
+    @DisplayName("Sucesso na atualização de câmbio")
+    void updateSuccessRabbitTest() throws JsonProcessingException {
+
+        when(applicationUtil.getMessenger()).thenReturn("rabbit");
+
+        when(this.cambiumConverter.converterToResponse(any())).thenReturn(this.cambiumDtoResponse);
+        doNothing().when(this.cambiumPublisher).sendCambiumObject(this.cambium);
+        when(this.cambiumService.save(any())).thenReturn(this.cambium);
+        when(this.cambiumService.findById(anyInt())).thenReturn(this.optional);
+        when(this.responseMessage.successUpdate()).thenReturn(this.messageResponse);
+
+        var actualResult = this.cambiumRule.update(TestConstant.ID, this.cambiumDtoRequest);
+
+        assertSame(this.cambiumDtoResponse, actualResult);
+        assertSame(this.messageResponse, actualResult.getMessage());
+        assertEquals(this.cambiumDtoResponse, actualResult);
+        assertEquals(CambiumDtoResponse.class, actualResult.getClass());
+        verify(applicationUtil).getMessenger();
+        verify(this.cambiumConverter).converterToResponse(any());
+        verify(this.cambiumPublisher).sendCambiumObject(any());
+        verify(this.cambiumService).save(any());
+        verify(this.cambiumService).findById(anyInt());
+        verify(this.responseMessage).successUpdate();
+
+    }
+
+    /**
+     * Metodo de teste: {@link CambiumRule#update(int, CambiumDtoRequest)}
+     */
+    @Test
+    @Order(5)
     @DisplayName("Exceção na atualização de câmbio")
     void updateExceptionTest() {
         when(this.cambiumService.findById(anyInt())).thenThrow(new BadRequestException(MessageEnum.ERROR_NOT_FOUND));

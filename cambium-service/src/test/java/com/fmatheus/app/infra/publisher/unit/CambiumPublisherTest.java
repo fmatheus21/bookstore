@@ -2,11 +2,9 @@ package com.fmatheus.app.infra.publisher.unit;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fmatheus.app.controller.constant.TestConstant;
-import com.fmatheus.app.controller.converter.CambiumConverter;
-import com.fmatheus.app.controller.dto.response.CambiumDtoResponse;
+import com.fmatheus.app.controller.converter.ObjectConverter;
 import com.fmatheus.app.infra.publisher.CambiumPublisher;
 import com.fmatheus.app.model.entity.Cambium;
-import com.fmatheus.app.model.service.CambiumService;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.amqp.AmqpException;
@@ -17,9 +15,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.List;
-
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.openMocks;
 
@@ -29,14 +24,11 @@ import static org.mockito.MockitoAnnotations.openMocks;
 @ExtendWith(SpringExtension.class)
 class CambiumPublisherTest {
 
+    @MockBean
+    private ObjectConverter objectConverter;
+
     @Autowired
     private CambiumPublisher cambiumPublisher;
-
-    @MockBean
-    private CambiumConverter cambiumConverter;
-
-    @MockBean
-    private CambiumService cambiumService;
 
     @MockBean
     private Queue queue;
@@ -44,9 +36,8 @@ class CambiumPublisherTest {
     @MockBean
     private RabbitTemplate rabbitTemplate;
 
-    private List<Cambium> listCambium;
 
-    private CambiumDtoResponse cambiumDtoResponse;
+    private Cambium cambium;
 
     @BeforeEach
     public void beforeEach() {
@@ -55,23 +46,26 @@ class CambiumPublisherTest {
     }
 
     /**
-     * Metodo de teste: {@link CambiumPublisher#sendCambiumList()}
+     * Teste: {@link CambiumPublisher#sendCambiumObject(Cambium)}
      */
     @Test
     @Order(1)
-    @DisplayName("Sucesso no envio da lista de câmbios para a fila bookstore_cambium do RabbitMQ")
-    void sendCambiumListTest() throws JsonProcessingException, AmqpException {
-        when(this.cambiumConverter.converterToResponse(any())).thenReturn(this.cambiumDtoResponse);
-        when(this.cambiumService.findAll()).thenReturn(this.listCambium);
-        when(this.queue.getName()).thenReturn(TestConstant.QUEUE_NAME);
-        doNothing().when(this.rabbitTemplate).convertAndSend(anyString(), (Object) any());
-        this.cambiumPublisher.sendCambiumList();
+    @DisplayName("Sucesso no envio de câmbios para a fila bookstore_cambium do RabbitMQ")
+    void SendCambiumObjectTest() throws JsonProcessingException, AmqpException {
+
+        when(this.objectConverter.converterJson(any(Cambium.class))).thenReturn("json");
+        when(this.queue.getName()).thenReturn("Name");
+        doNothing().when(this.rabbitTemplate).convertAndSend(anyString(), any(Object.class));
+
+        this.cambiumPublisher.sendCambiumObject(this.cambium);
+        verify(this.objectConverter).converterJson(any(Cambium.class));
+        verify(this.queue).getName();
+        verify(this.rabbitTemplate).convertAndSend(anyString(), any(Object.class));
     }
 
 
     private void start() {
-        this.listCambium = List.of(this.loadCambium());
-        this.cambiumDtoResponse = this.loadCambiumResponse();
+        this.cambium = this.loadCambium();
     }
 
     private Cambium loadCambium() {
@@ -83,14 +77,5 @@ class CambiumPublisherTest {
                 .build();
     }
 
-    private CambiumDtoResponse loadCambiumResponse() {
-        return CambiumDtoResponse.builder()
-                .id(TestConstant.ID)
-                .fromCurrency(TestConstant.FROM_CURRENCY)
-                .toCurrency(TestConstant.TO_CURRENCY)
-                .conversionFactor(TestConstant.CONVERSION_FACTOR)
-                .convertedValue(TestConstant.CONVERTED_VALUE)
-                .build();
-    }
 }
 

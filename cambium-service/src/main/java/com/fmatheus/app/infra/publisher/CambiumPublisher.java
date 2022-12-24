@@ -1,25 +1,18 @@
 package com.fmatheus.app.infra.publisher;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fmatheus.app.controller.converter.CambiumConverter;
+import com.fmatheus.app.controller.converter.ObjectConverter;
 import com.fmatheus.app.model.entity.Cambium;
-import com.fmatheus.app.model.service.CambiumService;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 @Component
 public class CambiumPublisher {
 
     @Autowired
-    private CambiumConverter cambiumConverter;
-
-    @Autowired
-    private CambiumService cambiumService;
+    private ObjectConverter objectConverter;
 
     @Autowired
     private Queue queueCambiumList;
@@ -28,17 +21,10 @@ public class CambiumPublisher {
     private RabbitTemplate rabbitTemplate;
 
 
-    public void sendCambiumList() throws JsonProcessingException {
-        var listCambium = this.cambiumService.findAll();
-        var json = this.converterJson(listCambium);
+    public void sendCambiumObject(Cambium cambium) throws JsonProcessingException {
+        var json = this.objectConverter.converterJson(cambium);
         this.rabbitTemplate.convertAndSend(this.queueCambiumList.getName(), json);
     }
 
-
-    private String converterJson(List<Cambium> cambiumList) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        var converter = cambiumList.stream().map(map -> this.cambiumConverter.converterToResponse(map)).toList();
-        return mapper.writeValueAsString(converter);
-    }
 
 }

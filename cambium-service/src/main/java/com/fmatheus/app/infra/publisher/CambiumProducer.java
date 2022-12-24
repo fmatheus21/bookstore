@@ -1,39 +1,43 @@
 package com.fmatheus.app.infra.publisher;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fmatheus.app.controller.converter.CambiumConverter;
+import com.fmatheus.app.controller.converter.ObjectConverter;
 import com.fmatheus.app.controller.util.ApplicationUtil;
 import com.fmatheus.app.model.entity.Cambium;
-import com.fmatheus.app.model.service.CambiumService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-@Slf4j
+import java.util.Objects;
+
+@Log4j2
 @RequiredArgsConstructor
 @Component
 public class CambiumProducer {
+
+    @Autowired
+    private ObjectConverter objectConverter;
 
     private final ApplicationUtil application;
 
     private final KafkaTemplate<String, String> kafkaTemplate;
 
-    private final CambiumConverter cambiumConverter;
 
-    private final CambiumService cambiumService;
-
-    public void sendCambiumList(Cambium cambium) throws JsonProcessingException {
+    public void sendCambiumObject(Cambium cambium) throws JsonProcessingException {
         log.info("Iniciando envio de dados para o servico book-service pelo Kafka");
-        var json = this.converterJson(cambium);
-        this.kafkaTemplate.send(this.application.getKafkaTopic(), json);
-        log.info("Envio de dados para o servico book-service pelo Kafka finalizado");
+        var json = this.objectConverter.converterJson(cambium);
+        this.kafkaTemplate.send(this.application.getKafkaTopic(), json).addCallback(
+                success -> {
+                    if (Objects.nonNull(success)) {
+                        log.info("Dados enviados ao servico book-service com sucesso.");
+                        log.info("Particao {}, Offset {}.", success.getRecordMetadata().partition(), success.getRecordMetadata().offset());
+                    }
+                },
+                error -> log.error("Erro ao enviar dados ao sevico book-service.")
+        );
     }
 
-    private String converterJson(Cambium cambium) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        var converter = this.cambiumConverter.converterToResponse(cambium);
-        return mapper.writeValueAsString(converter);
-    }
+
 }
