@@ -1,4 +1,4 @@
-package com.fmatheus.app.config;
+package com.fmatheus.app.controller.messenger.kafka.listener;
 
 
 import org.springframework.core.annotation.AliasFor;
@@ -28,4 +28,9 @@ public @interface KafkaConsumerCustomListener {
     @AliasFor(annotation = KafkaListener.class, attribute = "topicPartitions")
     TopicPartition[] topicPartitions() default {@TopicPartition(topic = "${api.kafka.topic}",
             partitionOffsets = {@PartitionOffset(partition = "0", initialOffset = "0"), @PartitionOffset(partition = "1", initialOffset = "0")})};
+
+
+    @AliasFor(annotation = KafkaListener.class, attribute = "errorHandler")
+    String errorHandler() default "kafkaErrorHandler";
+
 }

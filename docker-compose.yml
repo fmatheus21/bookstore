@@ -69,6 +69,7 @@ services:
       - rabbitmq
       - kafka
       - zookeeper
+      - kafdrop
     environment:
       RABBIT_URI: amqp://admin:admin@rabbitmq:5672
     networks:
@@ -144,6 +145,7 @@ services:
       - rabbitmq
       - kafka
       - zookeeper
+      - kafdrop
     environment:
       EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://bookstore:yt76Tdn93@naming-server:8761/eureka
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411/
@@ -175,6 +177,7 @@ services:
       SPRING.FLYWAY.URL: jdbc:mysql://cambium-db:3308/cambium_service?useSSL=false&useTimezone=true&serverTimezone=UTC&enabledTLSProtocols=TLSv1.2
       SPRING.FLYWAY.USER: docker
       SPRING.FLYWAY.PASSWORD: admin123
+      KAFKA_HOST: kafka29092
     ports:
       - "8000:8000"
     depends_on:
@@ -184,6 +187,7 @@ services:
       - rabbitmq
       - kafka
       - zookeeper
+      - kafdrop
     networks:
       - fmatheus-network
 
@@ -209,6 +213,7 @@ services:
       SPRING.FLYWAY.URL: jdbc:mysql://book-db:3310/book_service?useSSL=false&useTimezone=true&serverTimezone=UTC&enabledTLSProtocols=TLSv1.2
       SPRING.FLYWAY.USER: docker
       SPRING.FLYWAY.PASSWORD: admin123
+      KAFKA_HOST: kafka29092
     ports:
       - "8100:8100"
     depends_on:
@@ -217,6 +222,8 @@ services:
       - rabbitmq
       - kafka
       - zookeeper
+      - kafdrop
+      - cambium-service
     networks:
       - fmatheus-network
 
