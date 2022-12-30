@@ -1,15 +1,13 @@
 package com.fmatheus.app.controller.listener;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fmatheus.app.config.KafkaConsumerCustomListener;
 import com.fmatheus.app.controller.dto.response.CambiumDtoResponse;
 import com.fmatheus.app.model.entity.Cambium;
 import com.fmatheus.app.model.service.CambiumService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.annotation.PartitionOffset;
-import org.springframework.kafka.annotation.TopicPartition;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -32,11 +30,16 @@ public class KafkaConsumerListener {
      * @param partition Particao do topico
      * @author Fernando Matheus
      */
-    @KafkaListener(topicPartitions = @TopicPartition(topic = "${api.kafka.topic}",
-            partitionOffsets = {@PartitionOffset(partition = "0", initialOffset = "0"), @PartitionOffset(partition = "1", initialOffset = "0")}),
-            containerFactory = "listenerContainerFactory", groupId = "group-1")
-    public void createCambium(@Payload String payload, @Header(KafkaHeaders.RECEIVED_PARTITION_ID) int partition) {
-        log.info("Payload recebido [{}], da particao [{}].", payload, partition);
+    @KafkaConsumerCustomListener
+    public void createCambium(@Payload String payload,
+                              @Header(KafkaHeaders.RECEIVED_PARTITION_ID) int partition,
+                              @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
+                              @Header(KafkaHeaders.RECEIVED_TIMESTAMP) long timestamp
+    ) {
+        log.info("Partition: [{}]]", partition);
+        log.info("Topic: [{}]", topic);
+        log.info("TimeStamp: [{}]", timestamp);
+        log.info("Payload: [{}]", payload);
         this.processCambium(payload);
     }
 
