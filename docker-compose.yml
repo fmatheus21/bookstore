@@ -34,8 +34,8 @@ services:
     networks:
       - fmatheus-network
     depends_on:
-      - kafka
       - zookeeper
+      - kafka
     ports:
       - "19000:9000"
     environment:
@@ -67,8 +67,6 @@ services:
       - "9411:9411"
     depends_on:
       - rabbitmq
-      - kafka
-      - zookeeper
       - kafdrop
     environment:
       RABBIT_URI: amqp://admin:admin@rabbitmq:5672
@@ -127,6 +125,9 @@ services:
       dockerfile: naming-server/Dockerfile
     ports:
       - "8761:8761"
+    depends_on:
+      - rabbitmq
+      - kafdrop
     networks:
       - fmatheus-network
 
@@ -142,10 +143,6 @@ services:
       - "8765:8765"
     depends_on:
       - naming-server
-      - rabbitmq
-      - kafka
-      - zookeeper
-      - kafdrop
     environment:
       EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://bookstore:yt76Tdn93@naming-server:8761/eureka
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411/
@@ -177,17 +174,13 @@ services:
       SPRING.FLYWAY.URL: jdbc:mysql://cambium-db:3308/cambium_service?useSSL=false&useTimezone=true&serverTimezone=UTC&enabledTLSProtocols=TLSv1.2
       SPRING.FLYWAY.USER: docker
       SPRING.FLYWAY.PASSWORD: admin123
-      KAFKA_HOST: kafka29092
+      KAFKA_HOST: kafka:29092
     ports:
       - "8000:8000"
     depends_on:
-      - naming-server
       - cambium-db
+      - naming-server
       - api-gateway
-      - rabbitmq
-      - kafka
-      - zookeeper
-      - kafdrop
     networks:
       - fmatheus-network
 
@@ -213,16 +206,12 @@ services:
       SPRING.FLYWAY.URL: jdbc:mysql://book-db:3310/book_service?useSSL=false&useTimezone=true&serverTimezone=UTC&enabledTLSProtocols=TLSv1.2
       SPRING.FLYWAY.USER: docker
       SPRING.FLYWAY.PASSWORD: admin123
-      KAFKA_HOST: kafka29092
+      KAFKA_HOST: kafka:29092
     ports:
       - "8100:8100"
     depends_on:
-      - naming-server
       - book-db
-      - rabbitmq
-      - kafka
-      - zookeeper
-      - kafdrop
+      - naming-server
       - cambium-service
     networks:
       - fmatheus-network

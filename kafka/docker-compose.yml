@@ -41,6 +41,38 @@ services:
     environment:
       KAFKA_BROKERCONNECT: kafka:29092
 
+  rabbitmq:
+    image: rabbitmq:3.11.3-management
+    container_name: rabbitmq
+    hostname: rabbitmq
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+    ports:
+      - "5672:5672" #AMQP protocol port
+      - "15672:15672" #HTTP management UI
+    volumes:
+      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+      - fmatheus-network
+
+  zipkin-server:
+    image: openzipkin/zipkin:2.23.2
+    container_name: zipkin-server
+    hostname: zipkin-server
+    restart: always
+    ports:
+      - "9411:9411"
+    depends_on:
+      - rabbitmq
+      - kafdrop
+    environment:
+      RABBIT_URI: amqp://admin:admin@rabbitmq:5672
+    networks:
+      - fmatheus-network
+
 networks:
   fmatheus-network:
     driver: bridge
